@@ -3,6 +3,7 @@ class NH {
 	function __construct() {
 		$this->base_url = 'https://api2.nicehash.com/main/api/v2/';
 		$this->cache_folder = 'nh2_cache/';
+		!is_dir($this->cache_folder) mkdir($this->cache_folder);
 	}
 
 	
