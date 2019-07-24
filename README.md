@@ -12,4 +12,4 @@ Buildin the table funtion to easy view data in table.
 See folder sample for how to use it.
 
 Note:
-Today is July 24, 2019 You should compare the price of old and new plateform before switch to new plateform.
+Today is July 24, 2019 You should compare the price of old and new platform before switch to new plateform.
