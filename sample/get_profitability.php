@@ -1,8 +1,10 @@
 <?php
 include('nh2.php');
 
-$nh = new NH();
-$data = $nh->get_profitability_all(true); // change to false for read from cache file
+$live_data = false; // change to false for read from cache file
+
+$nh = new NH($live_data);
+$data = $nh->get_profitability_all();
 
 $field = array('name', 'niceName', 'category', 'paying', 'id');
 $format = array('', '', '', 'num_6', '');
