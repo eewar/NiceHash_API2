@@ -1,24 +1,29 @@
 <?php
 class NH {
-	function __construct() {
+	function __construct($live_data) {
+		$this->live_data = $live_data;
 		$this->base_url = 'https://api2.nicehash.com/main/api/v2/';
 		$this->cache_folder = 'nh2_cache/';
-		!is_dir($this->cache_folder) mkdir($this->cache_folder);
+		if (!is_dir($this->cache_folder)) mkdir($this->cache_folder);
 	}
 
 	
-	function get($url, $online) {
+	function get($url) {
 		$filename = str_replace('/', '_', $url).'.json';
 		$filename = $this->cache_folder.$filename;
-		if ($online):
+		if ($this->live_data):
 			$json = file_get_contents($this->base_url.$url);
-			file_put_contents($filename, $json);
+			if ($this->cache):
+				file_put_contents($filename, $json);
+			endif;
 		else:
 			if (is_file($filename)):
 				$json = file_get_contents($filename);
 			else:
 				$json = file_get_contents($this->base_url.$url);
-				file_put_contents($filename, $json);
+				if ($this->cache):
+					file_put_contents($filename, $json);
+				endif;
 			endif;
 		endif;
 		$array = json_decode($json, true);
@@ -26,10 +31,10 @@ class NH {
 	}
 
 	
-	function get_stats_global($online = false) {
+	function get_stats_global() {
 		// return current and 24h stats
 		// return key is algo_id
-		$data = $this->get('public/stats/global/current', $online);
+		$data = $this->get('public/stats/global/current');
 		$data_current = convert_v2k($data['algos'], 'a');
 		
 		$data = $this->get('public/stats/global/24h', $online);
@@ -48,43 +53,43 @@ class NH {
 	}
 
 	
-	function get_algos($online = false) {
-		$data = $this->get('mining/algorithms', $online);
+	function get_algos($key_is = 'order') {
+		$data = $this->get('mining/algorithms');
 		$data = $data['miningAlgorithms'];
 		foreach ($data as $key => $value):
-			$algos[$value['order']] = $value;
+			$algos[$value[$key_is]] = $value;
 		endforeach;
 		ksort($algos);
 		return $algos;
 	}
 	
 	
-	function get_mining($btc_address, $online) {
+	function get_mining($btc_address) {
 		$api_path = 'mining/external/'.$btc_address.'/rigs';
 		//$api_path = 'mining/external/'.$btc_address.'/rig/L154';
-		$data = $this->get($api_path, $online);
+		$data = $this->get($api_path);
 		return $data;
 	}
 	
 	
-	function get_mining_rig($btc_address, $rig_name, $online) {
+	function get_mining_rig($btc_address, $rig_name) {
 		$api_path = 'mining/external/'.$btc_address.'/rig/'.$rig_name;
-		$data = $this->get($api_path, $online);
+		$data = $this->get($api_path);
 		return $data;
 	}	
 
 	
-	function get_profitability_all($online = false) {
+	function get_profitability_all() {
 		$api_path = 'public/profcalc/devices';
-		$data = $this->get($api_path, $online);
+		$data = $this->get($api_path);
 		$data = $data['devicesShort'];
 		return $data;
 	}
 	
 	
-	function get_profitability_device($device, $online = false) {
-		$api_path = 'public/profcalc/device?device='.$device;
-		$data = $this->get($api_path, $online);
+	function get_device_speed($device_id) {
+		$api_path = 'public/profcalc/device?device='.$device_id;
+		$data = $this->get($api_path);
 		return $data;
 	}
 }
